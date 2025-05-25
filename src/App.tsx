@@ -2,17 +2,18 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import BottomTab from './components/BottomTab';
 import PunchCardPage from './pages/PunchCardPage';
 import TodoCalendarPage from './pages/TodoCalendarPage';
 import TodoPage from './pages/TodoPage';
 import AnalysisPage from './pages/AnalysisPage';
+import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import LogoShowcase from './components/LogoShowcase';
 import { getCurrentUser } from './utils/auth';
-import LogoutButton from './components/LogoutButton';
-import theme from './theme';
+import SettingsButton from './components/SettingsButton';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
@@ -25,15 +26,17 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 
 function AppContent() {
   const location = useLocation();
-  const showBottomTab = !location.pathname.startsWith('/login') && !location.pathname.startsWith('/logo');
+  const showBottomTab = !location.pathname.startsWith('/login') && !location.pathname.startsWith('/logo') && !location.pathname.startsWith('/settings');
+  const showSettingsButton = !location.pathname.startsWith('/login') && !location.pathname.startsWith('/logo') && !location.pathname.startsWith('/settings');
   const currentUser = getCurrentUser();
 
   return (
     <>
-      {showBottomTab && <LogoutButton />}
+      {showSettingsButton && <SettingsButton />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logo" element={<LogoShowcase />} />
+        <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
         <Route path="/" element={<RequireAuth><PunchCardPage /></RequireAuth>} />
         <Route path="/calendar" element={<RequireAuth><TodoCalendarPage /></RequireAuth>} />
         <Route path="/todo/:date" element={<RequireAuth><TodoPage /></RequireAuth>} />
@@ -53,7 +56,7 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Router>
