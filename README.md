@@ -373,7 +373,7 @@ DEEPSEEK_API_KEY=your_production_key
 
 - 项目主页：[GitHub Repository](https://github.com/your-username/project-50)
 - 问题反馈：[Issues](https://github.com/your-username/project-50/issues)
-- 邮箱：your.email@example.com
+- 邮箱：lihaolin1232020@163.com
 
 ---
 
