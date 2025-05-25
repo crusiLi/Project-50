@@ -1,4 +1,4 @@
-import { User, PunchRecord, TodoItem, TodoList, PunchItem } from './types';
+import { User, PunchRecord, TodoItem, PunchItem } from './types';
 import { startOfWeek, endOfWeek, parseISO } from 'date-fns';
 
 const API_BASE_URL = 'http://localhost:3001/api';
@@ -75,8 +75,8 @@ export async function checkAndUpdateUserDay(username: string): Promise<void> {
   const cycleStart = new Date(user.cycleStart);
   const currentDate = new Date(today);
   
-  const diffTime = Math.abs(currentDate.getTime() - cycleStart.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = currentDate.getTime() - cycleStart.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 第一天为1
   
   if (diffDays > user.currentDay) {
     const updatedUser = {
@@ -205,10 +205,10 @@ export async function updateUserTodos(username: string, date: string, todos: Tod
     if (allCompleted) {
       const cycleStart = new Date(user.cycleStart);
       const currentDate = new Date(today);
-      const diffTime = Math.abs(currentDate.getTime() - cycleStart.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffTime = currentDate.getTime() - cycleStart.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 第一天为1
       if (diffDays > user.currentDay) {
-        updatedUser.currentDay = diffDays;
+        updatedUser.currentDay = Math.max(1, diffDays); // 确保至少是第1天
       }
     }
   }

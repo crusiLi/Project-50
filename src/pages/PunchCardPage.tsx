@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider, Grid } from '@mui/material';
+import { Box, Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider, Grid } from '@mui/material';
 import { getCurrentUser, getUserData, updateUserPunchItems, getUserWeeklyPunchRecords } from '../utils/auth';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { format, parseISO, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns';
 import zhCN from 'date-fns/locale/zh-CN';
 import AppIcon from '../components/AppIcon';
-import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { PunchItem, PunchRecord } from '../utils/types';
-import { StyledPunchItem, StyledLinearProgress, ElegantPaper } from '../components/styled';
+import { 
+  StyledPunchItem, 
+  StyledLinearProgress, 
+  ElegantPaper
+} from '../components/styled';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import SuccessFeedback from '../components/SuccessFeedback';
 
 export default function PunchCardPage() {
   const [userData, setUserData] = useState<{
@@ -19,6 +23,7 @@ export default function PunchCardPage() {
   } | null>(null);
   const [weeklyRecords, setWeeklyRecords] = useState<PunchRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -30,11 +35,11 @@ export default function PunchCardPage() {
       const username = getCurrentUser();
       const data = await getUserData(username);
       if (data) {
-        // 计算当前是第几天（从注册日期开始）
+        // 计算当前是第几天（从注册日期开始，第一天为1）
         const cycleStart = new Date(data.cycleStart);
         const today = new Date();
-        const diffTime = Math.abs(today.getTime() - cycleStart.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // 加1是因为第一天也要计数
+        const diffTime = today.getTime() - cycleStart.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 第一天为1
         
         setUserData({
           punchItems: data.punchItems,
@@ -93,11 +98,7 @@ export default function PunchCardPage() {
       // 检查是否全部完成
       const allCompleted = updatedItems.every(item => item.completed);
       if (allCompleted) {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
+        setShowSuccess(true);
       }
 
       // 后台更新数据，不影响UI
@@ -121,7 +122,10 @@ export default function PunchCardPage() {
   }
 
   const completedCount = userData.punchItems.filter(item => item.completed).length;
-  const progress = (completedCount / userData.punchItems.length) * 100;
+  const dailyProgress = (completedCount / userData.punchItems.length) * 100;
+  
+  // 计算50天挑战的总体进度
+  const totalProgress = (userData.currentDay / 50) * 100;
 
   // 获取当前周的日期范围（周一到周日）
   const today = new Date();
@@ -238,14 +242,24 @@ export default function PunchCardPage() {
                         50天挑战
                       </Typography>
                     </Box>
-                    <StyledLinearProgress 
-                      variant="determinate" 
-                      value={progress} 
-                      sx={{ 
-                        height: { xs: 8, sm: 10 },
-                        borderRadius: { xs: 4, sm: 5 }
-                      }}
-                    />
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                      style={{ transformOrigin: "left" }}
+                    >
+                      <StyledLinearProgress 
+                        variant="determinate" 
+                        value={totalProgress} 
+                        sx={{ 
+                          height: { xs: 8, sm: 10 },
+                          borderRadius: { xs: 4, sm: 5 },
+                          '& .MuiLinearProgress-bar': {
+                            transition: 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                          }
+                        }}
+                      />
+                    </motion.div>
                     <Box sx={{ 
                       display: 'flex', 
                       justifyContent: 'space-between', 
@@ -259,14 +273,14 @@ export default function PunchCardPage() {
                         color="text.secondary"
                         sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                       >
-                        已完成 {completedCount} / {userData.punchItems.length} 项
+                        50天挑战进度：第 {userData.currentDay} 天
                       </Typography>
                       <Typography 
                         variant="body2" 
                         color="text.secondary"
                         sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                       >
-                        {progress.toFixed(0)}%
+                        {totalProgress.toFixed(1)}%
                       </Typography>
                     </Box>
                   </Box>
@@ -274,38 +288,73 @@ export default function PunchCardPage() {
                   <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
                   <Box>
-                    <Typography 
-                      variant="h6" 
-                      gutterBottom 
-                      sx={{ 
-                        fontWeight: 400,
-                        fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                        mb: { xs: 1.5, sm: 2 }
-                      }}
-                    >
-                      今日目标
-                    </Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center', 
+                      mb: { xs: 1.5, sm: 2 }
+                    }}>
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          fontWeight: 400,
+                          fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                        }}
+                      >
+                        今日目标
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: 'text.secondary',
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                        }}
+                      >
+                        {completedCount}/{userData.punchItems.length} ({dailyProgress.toFixed(0)}%)
+                      </Typography>
+                    </Box>
                     <Box sx={{ 
                       display: 'flex', 
                       flexDirection: 'column', 
                       gap: { xs: 1, sm: 1.5 }
                     }}>
-                      {userData.punchItems.map((item, index) => (
-                        <motion.div
-                          key={item.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.4, delay: index * 0.1 }}
-                        >
-                          <StyledPunchItem
-                            onClick={() => handleToggleItem(item.id)}
-                            sx={{
-                              p: { xs: 1.5, sm: 2 },
-                              borderRadius: { xs: 2, sm: 3 },
-                              minHeight: { xs: 48, sm: 56 },
-                              fontSize: { xs: '0.875rem', sm: '1rem' }
+                      <AnimatePresence>
+                        {userData.punchItems.map((item, index) => (
+                          <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                            transition={{ 
+                              duration: 0.4, 
+                              delay: index * 0.1,
+                              type: "spring",
+                              stiffness: 100
                             }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                           >
+                            <StyledPunchItem
+                              onClick={() => handleToggleItem(item.id)}
+                              sx={{
+                                p: { xs: 1.5, sm: 2 },
+                                borderRadius: { xs: 2, sm: 3 },
+                                minHeight: { xs: 48, sm: 56 },
+                                fontSize: { xs: '0.875rem', sm: '1rem' },
+                                position: 'relative',
+                                overflow: 'hidden',
+                                '&::after': item.completed ? {
+                                  content: '""',
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  background: 'linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05))',
+                                  pointerEvents: 'none',
+                                } : {}
+                              }}
+                            >
                             <Box sx={{ 
                               display: 'flex', 
                               alignItems: 'center', 
@@ -343,6 +392,7 @@ export default function PunchCardPage() {
                           </StyledPunchItem>
                         </motion.div>
                       ))}
+                      </AnimatePresence>
                     </Box>
                   </Box>
                 </ElegantPaper>
@@ -487,6 +537,14 @@ export default function PunchCardPage() {
           </Grid>
         </motion.div>
       </Container>
+      
+      {/* 成功反馈组件 */}
+      <SuccessFeedback
+        show={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        message="恭喜完成！"
+        subMessage="今日所有目标已达成"
+      />
     </Box>
   );
 } 

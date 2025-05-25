@@ -333,5 +333,86 @@
         }
       }
     ]
+  },
+  {
+    "username": "李昊霖",
+    "password": "20060507Lhl",
+    "punchItems": [
+      {
+        "id": 1,
+        "content": "早上8点起床",
+        "completed": true
+      },
+      {
+        "id": 2,
+        "content": "骑车20km",
+        "completed": false
+      },
+      {
+        "id": 3,
+        "content": "读书30分钟",
+        "completed": true
+      },
+      {
+        "id": 4,
+        "content": "看两集美剧",
+        "completed": true
+      },
+      {
+        "id": 5,
+        "content": "做一套cet6卷子",
+        "completed": true
+      },
+      {
+        "id": 6,
+        "content": "打怪猎",
+        "completed": false
+      },
+      {
+        "id": 7,
+        "content": "每天打卡",
+        "completed": true
+      }
+    ],
+    "currentDay": 1,
+    "cycleStart": "2025-05-25",
+    "todos": {
+      "2025-05-25": [
+        {
+          "id": "1748160461815",
+          "content": "111",
+          "completed": true
+        },
+        {
+          "id": "1748160463047",
+          "content": "11",
+          "completed": false
+        },
+        {
+          "id": "1748160464052",
+          "content": "1",
+          "completed": false
+        },
+        {
+          "id": "1748160465565",
+          "content": "11111",
+          "completed": false
+        }
+      ]
+    },
+    "punchRecords": [
+      {
+        "date": "2025-05-25",
+        "items": {
+          "1": true,
+          "2": false,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": false,
+          "7": true
+        }
+      }
+    ]
   }
 ]

@@ -51,12 +51,12 @@ function resetDailyPunchProgress() {
       completed: false
     }));
     
-    // 计算当前是第几天
+    // 计算当前是第几天（从第1天开始）
     const cycleStart = new Date(user.cycleStart);
     const currentDate = new Date(today);
-    const diffTime = Math.abs(currentDate.getTime() - cycleStart.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    user.currentDay = diffDays;
+    const diffTime = currentDate.getTime() - cycleStart.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 第一天为1
+    user.currentDay = Math.max(1, diffDays); // 确保至少是第1天
     
     // 添加今天的打卡记录
     const todayRecord: PunchRecord = {
