@@ -1,0 +1,88 @@
+{
+  "name": "project-50",
+  "version": "1.0.0",
+  "private": true,
+  "description": "基于科学习惯养成理论的50天打卡挑战应用，配合AI数据分析和可视化功能，帮助用户建立持久的好习惯。",
+  "keywords": ["habit-tracker", "challenge", "ai-analysis", "data-visualization", "react", "typescript"],
+  "author": {
+    "name": "Project-50 Team",
+    "email": "team@project-50.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/your-username/project-50",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/project-50.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/project-50/issues"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^5.15.10",
+    "@mui/material": "^5.15.10",
+    "@mui/x-date-pickers": "^6.19.4",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/d3": "^7.4.3",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.80",
+    "@types/react-calendar-heatmap": "^1.9.0",
+    "@types/react-dom": "^18.2.19",
+    "axios": "^1.9.0",
+    "canvas-confetti": "^1.9.3",
+    "cors": "^2.8.5",
+    "d3": "^7.9.0",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.5.0",
+    "express": "^4.18.2",
+    "framer-motion": "^12.12.2",
+    "react": "^18.3.1",
+    "react-calendar-heatmap": "^1.10.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "react-scripts": "5.0.1",
+    "recharts": "^2.15.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "server": "ts-node server/index.ts",
+    "dev": "concurrently \"npm run server\" \"npm run start\"",
+    "build:react": "react-scripts build",
+    "build:server": "tsc --outDir dist/server --project tsconfig.json",
+    "build:all": "npm run build:react && npm run build:server"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/react": "^18.3.21",
+    "concurrently": "^8.2.2"
+  }
+}
