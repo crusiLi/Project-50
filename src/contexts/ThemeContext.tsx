@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import { updateStatusBar } from '../utils/capacitor';
+import { getItem, setItem } from '../utils/storage';
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -21,17 +23,34 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // 初始化主题设置
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+    const loadTheme = async () => {
+      const saved = await getItem('darkMode');
+      if (saved) {
+        const darkMode = JSON.parse(saved);
+        setIsDarkMode(darkMode);
+        await updateStatusBar(darkMode);
+      }
+    };
+    loadTheme();
+  }, []);
+
+  // 保存主题设置
+  useEffect(() => {
+    const saveTheme = async () => {
+      await setItem('darkMode', JSON.stringify(isDarkMode));
+    };
+    saveTheme();
   }, [isDarkMode]);
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+  const toggleTheme = async () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    // 更新移动端状态栏
+    await updateStatusBar(newMode);
   };
 
   const lightTheme = createTheme({

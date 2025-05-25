@@ -1,0 +1,97 @@
+/* 移动端专用样式 */
+
+/* 安全区域适配 */
+.app-container {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* 防止页面缩放 */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* 移动端触摸优化 */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* 允许文本选择的元素 */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* 移动端滚动优化 */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+/* 键盘弹出时的适配 */
+.keyboard-adjust {
+  transition: padding-bottom 0.3s ease;
+}
+
+/* 移动端按钮优化 */
+.mobile-button {
+  min-height: 44px; /* iOS推荐的最小触摸目标 */
+  min-width: 44px;
+}
+
+/* 移动端卡片间距优化 */
+@media (max-width: 768px) {
+  .card-container {
+    margin: 8px;
+    padding: 12px;
+  }
+  
+  .settings-button {
+    right: 8px !important;
+    top: 8px !important;
+  }
+  
+  .bottom-tab {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* 横屏适配 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .header-section {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* 防止iOS Safari的橡皮筋效果 */
+body {
+  overscroll-behavior: none;
+}
+
+/* 移动端输入框优化 */
+input[type="text"], 
+input[type="password"], 
+textarea {
+  font-size: 16px; /* 防止iOS缩放 */
+}
+
+/* 移动端模态框优化 */
+.mobile-modal {
+  margin: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+} 

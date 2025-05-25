@@ -251,7 +251,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({
             >
               {monthInfo.month}
             </MonthLabel>
-          ))}
+        ))}
         </Box>
       </Box>
 

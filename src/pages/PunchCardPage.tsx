@@ -248,17 +248,17 @@ export default function PunchCardPage() {
                       transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
                       style={{ transformOrigin: "left" }}
                     >
-                      <StyledLinearProgress 
-                        variant="determinate" 
+                    <StyledLinearProgress 
+                      variant="determinate" 
                         value={totalProgress} 
-                        sx={{ 
-                          height: { xs: 8, sm: 10 },
+                      sx={{ 
+                        height: { xs: 8, sm: 10 },
                           borderRadius: { xs: 4, sm: 5 },
                           '& .MuiLinearProgress-bar': {
                             transition: 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
                           }
-                        }}
-                      />
+                      }}
+                    />
                     </motion.div>
                     <Box sx={{ 
                       display: 'flex', 
@@ -294,15 +294,15 @@ export default function PunchCardPage() {
                       alignItems: 'center', 
                       mb: { xs: 1.5, sm: 2 }
                     }}>
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontWeight: 400,
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: 400,
                           fontSize: { xs: '1.1rem', sm: '1.25rem' }
-                        }}
-                      >
-                        今日目标
-                      </Typography>
+                      }}
+                    >
+                      今日目标
+                    </Typography>
                       <Typography 
                         variant="body2" 
                         sx={{ 
@@ -319,9 +319,9 @@ export default function PunchCardPage() {
                       gap: { xs: 1, sm: 1.5 }
                     }}>
                       <AnimatePresence>
-                        {userData.punchItems.map((item, index) => (
-                          <motion.div
-                            key={item.id}
+                      {userData.punchItems.map((item, index) => (
+                        <motion.div
+                          key={item.id}
                             initial={{ opacity: 0, x: -20, scale: 0.9 }}
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: 20, scale: 0.9 }}
@@ -333,13 +333,13 @@ export default function PunchCardPage() {
                             }}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                          >
-                            <StyledPunchItem
-                              onClick={() => handleToggleItem(item.id)}
-                              sx={{
-                                p: { xs: 1.5, sm: 2 },
-                                borderRadius: { xs: 2, sm: 3 },
-                                minHeight: { xs: 48, sm: 56 },
+                        >
+                          <StyledPunchItem
+                            onClick={() => handleToggleItem(item.id)}
+                            sx={{
+                              p: { xs: 1.5, sm: 2 },
+                              borderRadius: { xs: 2, sm: 3 },
+                              minHeight: { xs: 48, sm: 56 },
                                 fontSize: { xs: '0.875rem', sm: '1rem' },
                                 position: 'relative',
                                 overflow: 'hidden',
@@ -353,8 +353,8 @@ export default function PunchCardPage() {
                                   background: 'linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05))',
                                   pointerEvents: 'none',
                                 } : {}
-                              }}
-                            >
+                            }}
+                          >
                             <Box sx={{ 
                               display: 'flex', 
                               alignItems: 'center', 

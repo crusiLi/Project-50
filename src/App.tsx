@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -11,9 +11,13 @@ import AnalysisPage from './pages/AnalysisPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import LogoShowcase from './components/LogoShowcase';
-import { getCurrentUser } from './utils/auth';
+import { getCurrentUser } from './utils/authAdapter';
 import SettingsButton from './components/SettingsButton';
+import NetworkStatus from './components/NetworkStatus';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { NetworkProvider } from './contexts/NetworkContext';
+import { initializeMobileApp } from './utils/capacitor';
+import { authAdapter } from './utils/authAdapter';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
@@ -32,6 +36,7 @@ function AppContent() {
 
   return (
     <>
+      <NetworkStatus />
       {showSettingsButton && <SettingsButton />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -55,14 +60,26 @@ function AppContent() {
 }
 
 export default function App() {
+  useEffect(() => {
+    // 初始化移动端功能和嵌入式后端
+    const initializeApp = async () => {
+      await initializeMobileApp();
+      await authAdapter.initialize();
+    };
+    
+    initializeApp();
+  }, []);
+
   return (
     <ThemeProvider>
-      <CssBaseline />
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Router>
-          <AppContent />
-        </Router>
-      </LocalizationProvider>
+      <NetworkProvider>
+        <CssBaseline />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Router>
+            <AppContent />
+          </Router>
+        </LocalizationProvider>
+      </NetworkProvider>
     </ThemeProvider>
   );
 } 
