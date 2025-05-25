@@ -38,8 +38,8 @@ import {
   FavoriteRounded
 } from '@mui/icons-material';
 import ProjectLogo from '../components/ProjectLogo';
-import HeatmapChart from '../components/charts/HeatmapChart';
-import CorrelationChart from '../components/charts/CorrelationChart';
+import AIRecommendations from '../components/charts/AIRecommendations';
+import SmartInsights from '../components/charts/SmartInsights';
 import HabitFormationChart from '../components/charts/HabitFormationChart';
 
 // 样式组件
@@ -144,8 +144,8 @@ interface AnalysisPageProps {
 
 const AnalysisPage: React.FC<AnalysisPageProps> = ({ username }) => {
   const [analysisData, setAnalysisData] = useState<DataAnalysisResult | null>(null);
-  const [heatmapData, setHeatmapData] = useState<any[]>([]);
-  const [correlationData, setCorrelationData] = useState<{correlations: CorrelationData[], goalPerformances: GoalPerformance[]}>({correlations: [], goalPerformances: []});
+  // const [heatmapData, setHeatmapData] = useState<any[]>([]);
+  // const [correlationData, setCorrelationData] = useState<{correlations: CorrelationData[], goalPerformances: GoalPerformance[]}>({correlations: [], goalPerformances: []});
   const [habitFormationData, setHabitFormationData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -176,14 +176,14 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ username }) => {
       const performance = await performanceResponse.json();
       
       setAnalysisData(analysis);
-      setHeatmapData(history.historyData || []);
+      // setHeatmapData(history.historyData || []);
       
       // 处理目标关联性数据
-      const correlations = calculateCorrelations(performance.goalPerformances);
-      setCorrelationData({
-        correlations,
-        goalPerformances: performance.goalPerformances
-      });
+      // const correlations = calculateCorrelations(performance.goalPerformances);
+      // setCorrelationData({
+      //   correlations,
+      //   goalPerformances: performance.goalPerformances
+      // });
       
       // 处理习惯形成数据
       const habitData = generateHabitFormationFromPerformance(performance.goalPerformances, analysis.analysis);
@@ -254,7 +254,7 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ username }) => {
       
       for (let day = 1; day <= days; day++) {
         const stage = day <= 21 ? 'forming' : day <= 66 ? 'developing' : 'established';
-        const progress = day / 66;
+        // const progress = day / 66;
         
         // 基于真实表现计算各项指标
         const consistency = Math.min(100, baseConsistency + streakBonus + day * 0.3 + (Math.random() - 0.5) * 8);
@@ -432,8 +432,8 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ username }) => {
             }}
           >
             <Tab label="概览分析" />
-            <Tab label="年度热力图" />
-            <Tab label="目标关联性" />
+            <Tab label="AI智能建议" />
+            <Tab label="智能洞察" />
             <Tab label="习惯形成" />
           </Tabs>
         </Paper>
@@ -798,14 +798,11 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ username }) => {
         </TabBox>
 
         <TabBox hidden={tabValue !== 1}>
-          <HeatmapChart data={heatmapData} />
+          <AIRecommendations username={username} analysisData={analysisData} />
         </TabBox>
 
         <TabBox hidden={tabValue !== 2}>
-          <CorrelationChart 
-            correlations={correlationData.correlations}
-            goalPerformances={correlationData.goalPerformances}
-          />
+          <SmartInsights username={username} analysisData={analysisData} />
         </TabBox>
 
         <TabBox hidden={tabValue !== 3}>

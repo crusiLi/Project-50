@@ -518,6 +518,332 @@ app.get('/api/users/:username/goal-performance', (req, res) => {
   }
 });
 
+// AI建议接口
+app.get('/api/users/:username/ai-recommendations', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const users = getUsers();
+    const user = users.find(u => u.username === username);
+
+    if (!user) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    // 获取基础分析数据
+    const analysisResult = await analyzeUserData(user);
+    
+    // 生成个性化建议
+    const personalizedRecommendations = generatePersonalizedRecommendations(user, analysisResult.analysis);
+    const progressPrediction = generateProgressPrediction(user, analysisResult.analysis);
+    
+    res.json({
+      insights: analysisResult.insights,
+      recommendations: analysisResult.recommendations,
+      motivationalMessage: analysisResult.motivationalMessage,
+      personalizedTips: personalizedRecommendations,
+      progressPrediction
+    });
+
+  } catch (error) {
+    console.error('获取AI建议失败:', error);
+    res.status(500).json({ error: '获取AI建议失败' });
+  }
+});
+
+// 智能洞察接口
+app.get('/api/users/:username/smart-insights', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const users = getUsers();
+    const user = users.find(u => u.username === username);
+
+    if (!user) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    // 获取基础分析数据
+    const analysisResult = await analyzeUserData(user);
+    
+    // 生成智能洞察
+    const smartInsights = generateSmartInsights(user, analysisResult.analysis);
+    const habitPatterns = analyzeHabitPatterns(user);
+    const performanceMetrics = calculatePerformanceMetrics(user, analysisResult.analysis);
+    const predictions = generatePredictions(user, analysisResult.analysis);
+    
+    res.json({
+      insights: smartInsights,
+      patterns: habitPatterns,
+      metrics: performanceMetrics,
+      predictions
+    });
+
+  } catch (error) {
+    console.error('获取智能洞察失败:', error);
+    res.status(500).json({ error: '获取智能洞察失败' });
+  }
+});
+
+// 辅助函数：生成个性化建议
+function generatePersonalizedRecommendations(user: User, analysis: any) {
+  const recommendations: any[] = [];
+  
+  if (analysis.completionRate < 70) {
+    recommendations.push({
+      id: 'improve-consistency',
+      category: 'habit',
+      title: '提升一致性策略',
+      description: '基于您的完成率分析，建议采用渐进式目标设定方法',
+      impact: 'high',
+      difficulty: 'medium',
+      timeframe: '2-3周',
+      actionSteps: [
+        '选择1-2个最重要的目标优先完成',
+        '设置每日提醒和奖励机制',
+        '记录完成时的感受和环境因素',
+        '每周回顾并调整策略'
+      ]
+    });
+  }
+  
+  if (analysis.weeklyPattern) {
+    const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    const bestDay = analysis.weeklyPattern.indexOf(Math.max(...analysis.weeklyPattern));
+    const worstDay = analysis.weeklyPattern.indexOf(Math.min(...analysis.weeklyPattern));
+    
+    recommendations.push({
+      id: 'optimize-timing',
+      category: 'timing',
+      title: '优化时间安排',
+      description: `您在${weekDays[bestDay]}表现最佳，在${weekDays[worstDay]}需要改进`,
+      impact: 'medium',
+      difficulty: 'easy',
+      timeframe: '1-2周',
+      actionSteps: [
+        `将重要目标安排在${weekDays[bestDay]}`,
+        `为${weekDays[worstDay]}制定特殊策略`,
+        '分析高效日和低效日的差异',
+        '调整作息和环境因素'
+      ]
+    });
+  }
+  
+  recommendations.push({
+    id: 'motivation-boost',
+    category: 'motivation',
+    title: '动机维持系统',
+    description: '建立长期动机维持机制，防止中途放弃',
+    impact: 'high',
+    difficulty: 'medium',
+    timeframe: '持续进行',
+    actionSteps: [
+      '设定里程碑奖励',
+      '找到习惯伙伴或社群',
+      '可视化进步过程',
+      '定期回顾初始目标'
+    ]
+  });
+  
+  return recommendations;
+}
+
+// 辅助函数：生成进度预测
+function generateProgressPrediction(user: User, analysis: any) {
+  const completionRate = analysis.completionRate || 0;
+  const streakDays = analysis.streakDays || 0;
+  
+  let nextWeekSuccess = completionRate;
+  let monthlyTrend: 'improving' | 'stable' | 'declining' = 'stable';
+  
+  if (streakDays > 7) {
+    nextWeekSuccess = Math.min(100, completionRate + 10);
+    monthlyTrend = 'improving';
+  } else if (streakDays < 3) {
+    nextWeekSuccess = Math.max(0, completionRate - 15);
+    monthlyTrend = 'declining';
+  }
+  
+  const riskFactors: string[] = [];
+  const opportunities: string[] = [];
+  
+  if (completionRate < 50) {
+    riskFactors.push('完成率偏低，需要调整目标难度');
+  }
+  if (streakDays < 3) {
+    riskFactors.push('连续性不足，容易中断习惯');
+  }
+  
+  if (completionRate > 80) {
+    opportunities.push('表现优秀，可以考虑增加挑战');
+  }
+  if (streakDays > 14) {
+    opportunities.push('习惯已初步形成，可以优化细节');
+  }
+  
+  return {
+    nextWeekSuccess,
+    monthlyTrend,
+    riskFactors,
+    opportunities
+  };
+}
+
+// 辅助函数：生成智能洞察
+function generateSmartInsights(user: User, analysis: any) {
+  const insights: any[] = [];
+  
+  if (analysis.completionRate > 80) {
+    insights.push({
+      id: 'high-performance',
+      type: 'performance',
+      title: '优秀表现',
+      description: `您的整体完成率达到${analysis.completionRate.toFixed(1)}%，表现非常出色！`,
+      severity: 'low',
+      confidence: 95,
+      actionable: false,
+      metrics: {
+        current: analysis.completionRate,
+        target: 90,
+        trend: 'up'
+      }
+    });
+  } else if (analysis.completionRate < 50) {
+    insights.push({
+      id: 'low-performance',
+      type: 'performance',
+      title: '需要改进',
+      description: `完成率为${analysis.completionRate.toFixed(1)}%，建议调整目标或策略`,
+      severity: 'high',
+      confidence: 90,
+      actionable: true,
+      metrics: {
+        current: analysis.completionRate,
+        target: 70,
+        trend: 'down'
+      }
+    });
+  }
+  
+  if (analysis.streakDays > 14) {
+    insights.push({
+      id: 'streak-success',
+      type: 'pattern',
+      title: '习惯形成良好',
+      description: `连续打卡${analysis.streakDays}天，习惯正在稳固建立`,
+      severity: 'low',
+      confidence: 85,
+      actionable: false
+    });
+  } else if (analysis.streakDays < 3) {
+    insights.push({
+      id: 'streak-warning',
+      type: 'recommendation',
+      title: '连续性需要加强',
+      description: `当前连续打卡${analysis.streakDays}天，建议专注于建立稳定的日常习惯`,
+      severity: 'medium',
+      confidence: 80,
+      actionable: true
+    });
+  }
+  
+  return insights;
+}
+
+// 辅助函数：分析习惯模式
+function analyzeHabitPatterns(user: User) {
+  const patterns: any[] = [];
+  
+  // 分析周内表现差异
+  const weeklyStats = new Array(7).fill(0);
+  const weeklyCounts = new Array(7).fill(0);
+  
+  user.punchRecords.forEach(record => {
+    const date = new Date(record.date);
+    const dayOfWeek = (date.getDay() + 6) % 7; // 转换为周一=0的格式
+    
+    const dayTotal = Object.keys(record.items).length;
+    const dayCompleted = Object.values(record.items).filter(Boolean).length;
+    
+    if (dayTotal > 0) {
+      weeklyStats[dayOfWeek] += (dayCompleted / dayTotal) * 100;
+      weeklyCounts[dayOfWeek]++;
+    }
+  });
+  
+  // 计算平均值
+  for (let i = 0; i < 7; i++) {
+    if (weeklyCounts[i] > 0) {
+      weeklyStats[i] = weeklyStats[i] / weeklyCounts[i];
+    }
+  }
+  
+  const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  const maxDay = weeklyStats.indexOf(Math.max(...weeklyStats));
+  const minDay = weeklyStats.indexOf(Math.min(...weeklyStats));
+  
+  if (Math.max(...weeklyStats) - Math.min(...weeklyStats) > 20) {
+    patterns.push({
+      pattern: '周内表现差异',
+      frequency: 100,
+      impact: 'neutral',
+      description: `您在${weekDays[maxDay]}表现最佳(${weeklyStats[maxDay].toFixed(1)}%)，在${weekDays[minDay]}表现最差(${weeklyStats[minDay].toFixed(1)}%)`,
+      suggestions: [
+        `在${weekDays[maxDay]}安排重要目标`,
+        `为${weekDays[minDay]}制定特殊策略`,
+        '分析高效日的成功因素'
+      ]
+    });
+  }
+  
+  return patterns;
+}
+
+// 辅助函数：计算性能指标
+function calculatePerformanceMetrics(user: User, analysis: any) {
+  return [
+    {
+      name: '完成率',
+      value: analysis.completionRate,
+      unit: '%',
+      trend: analysis.completionRate > 70 ? 'up' : analysis.completionRate < 50 ? 'down' : 'stable',
+      change: 5.2,
+      icon: 'Assessment',
+      color: '#4caf50'
+    },
+    {
+      name: '连续天数',
+      value: analysis.streakDays,
+      unit: '天',
+      trend: analysis.streakDays > 7 ? 'up' : 'stable',
+      change: 2,
+      icon: 'Schedule',
+      color: '#2196f3'
+    },
+    {
+      name: '活跃目标',
+      value: analysis.bestPerformingGoals?.length || 0,
+      unit: '个',
+      trend: 'stable',
+      change: 0,
+      icon: 'TrackChanges',
+      color: '#ff9800'
+    }
+  ];
+}
+
+// 辅助函数：生成预测
+function generatePredictions(user: User, analysis: any) {
+  return {
+    weeklySuccess: 75,
+    monthlyTrend: 'improving',
+    riskLevel: 'low',
+    opportunities: [
+      '可以考虑增加新的挑战目标',
+      '优化时间安排提高效率',
+      '建立奖励机制维持动机'
+    ]
+  };
+}
+
 app.listen(PORT, () => {
   console.log(`服务器运行在 http://localhost:${PORT}`);
 }); 
